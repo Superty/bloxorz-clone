@@ -10,18 +10,18 @@
 
 class ShaderProgram {
 public:
-	ShaderProgram(const std::string& vertShaderPath, const std::string& fragShaderPath);
+	ShaderProgram(const string& vertShaderPath, const string& fragShaderPath);
 	ShaderProgram();
 	void use();
 	// operator int();
 	bool isValid();
-	void useUniform(const std::string& uniformName, const mat4& uniformValue);
-	void useUniform(const std::string& uniformName, const vec4& uniformValue);
-	void useUniform(const std::string& uniformName, const vec3& uniformValue);
+	void useUniform(const string& uniformName, const mat4& uniformValue);
+	void useUniform(const string& uniformName, const vec4& uniformValue);
+	void useUniform(const string& uniformName, const vec3& uniformValue);
 
 private:
 	GLuint id;
-	static std::string loadFile(const std::string& path);
-	static GLuint makeShader(GLenum shaderType, const std::string& path);
-	GLuint getUniformLocation(const std::string& uniformName);
+	static string loadFile(const string& path);
+	static GLuint makeShader(GLenum shaderType, const string& path);
+	GLuint getUniformLocation(const string& uniformName);
 };

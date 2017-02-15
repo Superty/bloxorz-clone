@@ -1,4 +1,5 @@
 #include "Cuboid.hpp"
+#include "Tile.hpp"
 
 GLuint Cuboid::VAO;
 
@@ -10,6 +11,13 @@ Cuboid::Cuboid(rgb3 o_color, vec3 o_length, vec3 o_pos, GLfloat o_yaw, GLfloat o
 ,	pitch(o_pitch)
 ,	roll(o_roll)
 {  }
+
+void Cuboid::set(GLint drawRow, GLint drawCol, GLfloat yawDeg, GLfloat pitchDeg, GLfloat rollDeg) {
+	pos = indexToCoord(drawRow, drawCol, Tile::HEIGHT);
+	yaw = radians(yawDeg);
+	pitch = radians(pitchDeg);
+	roll = radians(rollDeg);
+}
 
 void Cuboid::draw() {
 	if(Graphics::activeShader.isValid()) {

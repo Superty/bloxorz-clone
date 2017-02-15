@@ -3,19 +3,29 @@
 #include "globals.hpp"
 #include "Graphics.hpp"
 
+enum class CameraMode { Top, Tower };
+
 namespace Camera {
 	extern vec3 pos;
 	void init();
-	void updateProjection();
-	void shiftLookDir(GLfloat o_yaw, GLfloat o_pitch);
-	void shiftLookFront();
-	void shiftLookBack();
-	void shiftLookLeft();
-	void shiftLookRight();
-	void shiftLookUp();
-	void shiftLookDown();
+	void updateProjection(mat4 projection);
+	void useOrthoProjection();
 
-	void updateView();
+	// void shiftLookDir(GLfloat o_yaw, GLfloat o_pitch);
+	// void shiftLookFront();
+	// void shiftLookBack();
+	// void shiftLookLeft();
+	// void shiftLookRight();
+	// void shiftLookUp();
+	// void shiftLookDown();
+
+	void updateView(mat4 view);
+	void useTopCam();
+	void useTowerCam();
+	void useHelicopterCam();
+
+
+
 	// mat4 getVP();
 	// void clipPos();
 	// void setShift(vec3 newPos);

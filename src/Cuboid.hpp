@@ -11,6 +11,7 @@ class Cuboid {
 	GLfloat yaw, pitch, roll;
 	void draw();
 	static void init();
+	void set(GLint drawRow, GLint drawCol, GLfloat yawDeg, GLfloat pitchDeg, GLfloat rollDeg);
 
   private:
 	static GLuint VAO;

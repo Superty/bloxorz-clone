@@ -36,9 +36,35 @@ vector<int> make() {
 	return x;
 }
 
+class P {
+  public:
+	virtual void val() {
+		cerr << "1\n";
+	}
+};
+
+class Q : public P {
+  public:
+	virtual void val() {
+		cerr << "2\n";
+	}
+};
+
 int main() {
 	ios::sync_with_stdio(false);
 	// cin.tie(NULL);
+
+	unique_ptr<P> p = make_unique<P>();
+	p->val();
+	unique_ptr<P> q = make_unique<Q>();
+	q->val();
+	// p = q;
+	// p->val();
+	// Q* q = new Q();
+	// q->val();
+	// p = q;
+	// p->val();
+
 
 	// f(3);
 	// X a;
@@ -49,8 +75,8 @@ int main() {
 	// cerr << c.y << '\n';
 
 	// int x = 1;
-	foo(100000, make());
-	cerr <<"done\n";
+	// foo(100000, make());
+	// cerr <<"done\n";
 	// for(int i = 0; i <= 1000000; i++) {
 	// 	foo(make());
 	// }

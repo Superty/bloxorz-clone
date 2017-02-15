@@ -5,7 +5,6 @@
 #include "Tile.hpp"
 
 enum class Orientation { Vertical, Horizontal };
-enum class Status { Entering, Moving, Exiting, Static };
 
 inline void toggleOrientation(Orientation& o) {
 	if(o == Orientation::Vertical) {
@@ -16,20 +15,23 @@ inline void toggleOrientation(Orientation& o) {
 	}
 }
 
+class Board;
+
 class Player {
   public:
 	GLint row, col;
 	Orientation orient;
 	Direction dir, moveDir;
 	Status status;
-	GLfloat updateTime;
-	Player(GLfloat curTime, GLuint o_row, GLuint o_col);
+	Player(GLuint o_row, GLuint o_col);
 	Player();
-	void update(GLfloat curTime);
+	void update(GLfloat dt, Board& board);
 	void draw();
 	bool isStatic();
-	void rollModelTill(GLfloat by, GLfloat till);
-	void move(GLfloat curTime, Direction where);
+	void animateModelTill(Board& board, GLfloat& attr, GLfloat by, GLfloat till);
+	void move(Direction where);
+	GLint dirGroup(Direction d);
+	void stepOnCoveredTiles(Board& board);
 
   private:
   	Cuboid model;

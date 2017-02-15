@@ -10,7 +10,7 @@ obj/%.o: src/%.cpp src/%.hpp src/globals.hpp
 	$(CXX) $(CXX_FLAGS) $(DEBUG_FLAGS) -c -o $@ $<
 
 game: $(OBJS) main.cpp include/glad.c
-	$(CXX) $(CXX_FLAGS) -o $@ $^ $(GL_FLAGS)
+	$(CXX) $(CXX_FLAGS) $(DEBUG_FLAGS) -o $@ $^ $(GL_FLAGS)
 	
 .PHONY: clean run test
 

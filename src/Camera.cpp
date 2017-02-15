@@ -4,6 +4,7 @@ namespace Camera {
 
 const GLfloat ZOOM_SPEED = 0.1, PAN_SPEED = 8, MAX_ZOOM = 4;
 
+
 vec3 pos = vec3(0, 0, 300);
 GLfloat zoom = 1;
 
@@ -12,23 +13,23 @@ vec3 dir;
 
 void init() {
 	if(Graphics::activeShader.isValid()) {
-		dir = vec3(
-			rotate(pitch, vec3(0, 0, 1))
-			*rotate(yaw, vec3(0, 1, 0))
-			*vec4(0, 0, -1, 1)
-		);
-		updateProjection();
-		updateView();
+		// dir = vec3(
+		// 	rotate(pitch, vec3(0, 0, 1))
+		// 	*rotate(yaw, vec3(0, 1, 0))
+		// 	*vec4(0, 0, -1, 1)
+		// );
+		useOrthoProjection();
+		useTowerCam();
+		// updateView();
 	}
 	else {
 		cerr << "error: Camera: no shader specified\n";
 	}
 }
 
-void updateProjection() {
+void useOrthoProjection() {
 	GLfloat width = Graphics::SCREEN_WIDTH/zoom, height = Graphics::SCREEN_HEIGHT/zoom;
-	Graphics::activeShader.useUniform(
-		"projection",
+	updateProjection(
 		ortho(
 			-width/2,
 			width/2,
@@ -37,6 +38,25 @@ void updateProjection() {
 			-1000.0f,
 			+1000.0f
 		)
+	);
+}
+
+void usePerspectiveProjection() {
+	GLfloat width = Graphics::SCREEN_WIDTH/zoom, height = Graphics::SCREEN_HEIGHT/zoom;
+	updateProjection(
+		perspective(
+			90.0f
+		,	width/height
+		,	0.1f
+		,	500.0f
+		)
+	);
+}
+
+void updateProjection(mat4 projection) {
+	Graphics::activeShader.useUniform(
+		"projection",
+		projection
 	);
 }
 
@@ -86,37 +106,37 @@ void shiftLookDir(GLfloat dyaw, GLfloat dpitch) {
 // 	updateView();
 // }
 
-GLfloat moveSpeed = 10;
+// GLfloat moveSpeed = 10;
 
-void shiftLookFront() {
-	pos.z += moveSpeed;
-	updateView();
-}
+// void shiftLookFront() {
+// 	pos.z += moveSpeed;
+// 	useStandardView();
+// }
 
-void shiftLookBack() {
-	pos.z -= moveSpeed;
-	updateView();
-}
+// void shiftLookBack() {
+// 	pos.z -= moveSpeed;
+// 	useStandardView();
+// }
 
-void shiftLookLeft() {
-	pos.x -= moveSpeed;
-	updateView();
-}
+// void shiftLookLeft() {
+// 	pos.x -= moveSpeed;
+// 	useStandardView();
+// }
 
-void shiftLookRight() {
-	pos.x += moveSpeed;
-	updateView();
-}
+// void shiftLookRight() {
+// 	pos.x += moveSpeed;
+// 	useStandardView();
+// }
 
-void shiftLookUp() {
-	pos.y += moveSpeed;
-	updateView();
-}
+// void shiftLookUp() {
+// 	pos.y += moveSpeed;
+// 	useStandardView();
+// }
 
-void shiftLookDown() {
-	pos.y -= moveSpeed;
-	updateView();
-}
+// void shiftLookDown() {
+// 	pos.y -= moveSpeed;
+// 	useStandardView();
+// }
 
 /*
 ortho(
@@ -128,8 +148,28 @@ ortho(
 	+1000.0f
 ) */
 
+void useTowerCam() {
+	pos = vec3(0, 0, 300);
+	updateView(
+		lookAt(
+			pos
+		,	pos + vec3(-1, -1, -0.5)
+		,	vec3(0, 1, 0)
+		)
+	);
+}
+void useTopCam() {
+	pos = vec3(-50, 0, 300);
+	updateView(
+		lookAt(
+			pos
+		,	pos + vec3(0, -1, 0)
+		,	vec3(-1, 0, 0)
+		)
+	);
+}
 
-void updateView() {
+void updateView(mat4 view) {
 	Graphics::activeShader.useUniform(
 		"view",
 		// mat4(1.0)
@@ -138,11 +178,7 @@ void updateView() {
 		// ,	pos + dir
 		// ,	vec3(0, 1, 0)
 		// )
-		lookAt(
-			pos
-		,	pos + vec3(-1, -1, -0.5)
-		,	vec3(0, 1, 0)
-		)
+		view
 	);
 }
 

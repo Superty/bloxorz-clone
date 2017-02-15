@@ -13,7 +13,7 @@ namespace Graphics {
 
 	extern GLFWwindow* window;
 	extern ShaderProgram activeShader;
-	bool useShader(const std::string& name);
+	bool useShader(const string& name);
 	void init();
 
 	void drawRectangle(rgb3 color, GLfloat width, GLfloat height, vec3 position, GLfloat yaw, GLfloat pitch, GLfloat roll, vec3 internalPosition = vec3(0, 0, 0));

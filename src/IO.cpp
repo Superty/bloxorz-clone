@@ -1,6 +1,7 @@
 #include "IO.hpp"
 
 namespace IO {
+	bool inputEnabled;
 	vec2 cursor;
 
 	void init() {
@@ -13,6 +14,7 @@ namespace IO {
 		glfwGetCursorPos(Graphics::window, &xpos, &ypos);
 		cursor.x = xpos;
 		cursor.y = ypos;
+		inputEnabled = true;
 	}
 
 	void keyCallback(GLFWwindow *window, GLint key, GLint scancode, GLint action, GLint mode) {
@@ -22,15 +24,15 @@ namespace IO {
 		// else {
 		// 	game->keyCallback(key, action, mode);
 		// }
-	}
+}
 
 	void cursorPositionCallback(GLFWwindow* window, GLdouble xpos, GLdouble ypos) {
 		// game->cursorPositionCallback(window, xpos, ypos);
-		GLfloat slow = 0.01;
-		// Camera::shiftLookDir(slow*(xpos - cursor.x), slow*(ypos - cursor.y));
-		Camera::shiftLookDir(slow*(xpos - cursor.x), 0);
-		cursor.x = xpos;
-		cursor.y = ypos;
+		// GLfloat slow = 0.01;
+		// // Camera::shiftLookDir(slow*(xpos - cursor.x), slow*(ypos - cursor.y));
+		// Camera::shiftLookDir(slow*(xpos - cursor.x), 0);
+		// cursor.x = xpos;
+		// cursor.y = ypos;
 	}
 
 	void scrollCallback(GLFWwindow* window, GLdouble xoffset, GLdouble yoffset) {
@@ -42,18 +44,26 @@ namespace IO {
 	}
 
 	void pollKeys() {
-		GLfloat curTime = glfwGetTime();
-		if(glfwGetKey(Graphics::window, GLFW_KEY_W)) {
-			Game::p.move(curTime, Direction::Up);
+		if(Game::movingObjectCount == 0) {
+			// GLfloat curTime = glfwGetTime();
+			if(glfwGetKey(Graphics::window, GLFW_KEY_W)) {
+				Game::player.move(Direction::Up);
+			}
+			if(glfwGetKey(Graphics::window, GLFW_KEY_A)) {
+				Game::player.move(Direction::Left);
+			}
+			if(glfwGetKey(Graphics::window, GLFW_KEY_S)) {
+				Game::player.move(Direction::Down);
+			}
+			if(glfwGetKey(Graphics::window, GLFW_KEY_D)) {
+				Game::player.move(Direction::Right);
+			}
 		}
-		if(glfwGetKey(Graphics::window, GLFW_KEY_A)) {
-			Game::p.move(curTime, Direction::Left);
+		if(glfwGetKey(Graphics::window, GLFW_KEY_1)) {
+			Camera::useTowerCam();
 		}
-		if(glfwGetKey(Graphics::window, GLFW_KEY_S)) {
-			Game::p.move(curTime, Direction::Down);
-		}
-		if(glfwGetKey(Graphics::window, GLFW_KEY_D)) {
-			Game::p.move(curTime, Direction::Right);
+		if(glfwGetKey(Graphics::window, GLFW_KEY_2)) {
+			Camera::useTopCam();
 		}
 	}
 }

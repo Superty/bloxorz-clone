@@ -48,10 +48,14 @@ int main() {
 	// cerr << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w << '\n';
 	
 	// Graphics::drawCuboid(rgb3(0, 0, 1), 50, -100, 50, vec3(0, 0, 0), radians(0.0), radians(0.0), radians(30*curTime));	
-	Cuboid ground(rgb3(1, 0, 0), vec3(500, 10, 500), vec3(-300, 0, 50), radians(0.0), radians(0.0), radians(0.0));
+	// Cuboid ground(rgb3(1, 0, 0), vec3(500, 10, 500), vec3(-300, 0, 50), radians(0.0), radians(0.0), radians(0.0));
+	Cuboid test(rgb3(1, 0, 0), vec3(50, 10, 50), vec3(0, 0, 50), radians(0.0), radians(0.0), radians(0.0));
 	GLfloat curTime = glfwGetTime();
 	// Player p(curTime, 9, 9);
-	Game::init(curTime);
+	// NormalTile tile(2, 2);
+
+	// tile.model = test;
+	Game::init("level.txt");
 	while (!glfwWindowShouldClose(Graphics::window)) {
 		glfwPollEvents();
 		IO::pollKeys();
@@ -62,9 +66,12 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		Game::p.update(curTime);
-		ground.draw();
-		Game::p.draw();
+		Game::update(delTime);
+		Game::draw();
+		// test.draw();
+		// tile.draw();
+		// Game::player.draw();
+		// Game::board.draw();
 		// Graphics::drawCuboid(, 500, 10, 500, , );
 		// Graphics::drawCuboid(rgb3(1, 0, 0), 50, 10, 50, vec3(-50, 0, 0), radians(0.0), radians(0.0), radians(90.0));
 		// Graphics::drawCuboid(rgb3(1, 0, 0), 50, 10, 50, vec3(0, 0, -50), radians(0.0), radians(0.0), radians(90.0));
@@ -72,7 +79,7 @@ int main() {
 		// Graphics::drawCuboid(rgb3(0, 1, 0), 50, 10, 50, vec3(50, 0, 0), radians(0.0), radians(0.0), radians(90.0));
 		// Graphics::drawCuboid(rgb3(0, 1, 0), 50, 10, 50, vec3(50, 0, 50), radians(0.0), radians(0.0), radians(90.0));
 		// Graphics::drawCuboid(rgb3(0, 0, 1), 50, -100, 50, vec3(0, 0, 0), radians(0.0), radians(0.0), radians(30*curTime));
-
+		
 		// Camera::setLook(curTime, 0);
 
 		// Graphics::drawRectangle(rgb3(1, 0, 0), 100, 200, vec3(400, 400, 100), radians(30*curTime), radians(0.0), radians(45.0));

@@ -2,10 +2,14 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
+
 #include <glad/glad.h>
 
 using std::string;
 using std::cerr;
+using std::pair;
+using std::vector;
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
@@ -37,11 +41,12 @@ using rgb4 = vec4;
 using rgb3 = vec3;
 
 enum class Direction { Up, Down, Left, Right };
+enum class Status { Entering, Moving, Exiting, Static };
 
 inline vec3 indexToCoord(GLint r, GLint c, GLfloat y = 0) {
 	return vec3(-300 + 50*r, y, 50 + 50*c);
 }
 
-inline rgb3 COLOR(GLfloat r, GLfloat g, GLfloat b) {
+inline rgb3 RGB(GLfloat r, GLfloat g, GLfloat b) {
 	return rgb3(r/255.0, g/255.0, b/255.0);
 }
