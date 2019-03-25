@@ -15,33 +15,35 @@ class Tile {
 	virtual void stepOn(Player& player, Board& board);
 	virtual void activate();
 	virtual void update(GLfloat dt);
+  
 	TileType type;
+  Status status;
 
-	static constexpr GLfloat
-		LENGTH = 50
-	,	HEIGHT = 10
-	;
+  static constexpr GLfloat
+    LENGTH = 50
+  , HEIGHT = 10
+  ;
 
   // protected:
-	Tile(TileType o_type, rgb3 o_color, GLint o_row, GLint o_col);
-	GLint row, col;
-	Cuboid model;
+  Tile(TileType o_type, rgb3 o_color, GLint o_row, GLint o_col);
+  GLint row, col;
+  Cuboid model;
 };
 
 class VisibleTile : public Tile {
   public:
-  	VisibleTile(TileType o_type, rgb3 o_color, GLint o_row, GLint o_col);
-  	virtual void draw();
+    VisibleTile(TileType o_type, rgb3 o_color, GLint o_row, GLint o_col);
+    virtual void draw();
 };
 
 class NormalTile : public VisibleTile {
   public:
-	  NormalTile(GLint o_row, GLint o_col);
+    NormalTile(GLint o_row, GLint o_col);
 };
 
 class FragileTile : public VisibleTile {
   public:
-	  FragileTile(GLint o_row, GLint o_col);
+    FragileTile(GLint o_row, GLint o_col);
     virtual void stepOn(Player& player, Board& board);
 };
 

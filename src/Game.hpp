@@ -6,7 +6,8 @@
 #include "Camera.hpp"
 #include "Light.hpp"
 #include "Player.hpp"
-#include "Board.hpp"
+
+class Player;
 
 namespace Game {
 	extern Player player;
@@ -16,4 +17,5 @@ namespace Game {
 	void init(string levelFile);
 	void update(GLfloat dt);
 	void draw();
+	void end(bool& setTrue);
 } // namespace Game

@@ -12,6 +12,12 @@ void error_callback(int error, const char* description) {
 void init() {
 	initgl();
 
+	if(!addShader("hudShader", "src/hudShader")) {
+		exit(EXIT_FAILURE);
+	}
+	else if(!useShader("hudShader")) {
+		exit(EXIT_FAILURE);
+	}
 	if(!addShader("litMonochrome", "src/litMonochrome")) {
 		exit(EXIT_FAILURE);
 	}
@@ -20,6 +26,7 @@ void init() {
 	}
 	
 	Cuboid::init();
+	Rectangle::init();
 	initRectangleVAO();
 }
 
@@ -169,6 +176,23 @@ void drawCuboid(rgb3 color, GLfloat length, GLfloat width, GLfloat height, vec3 
 	else {
 		cerr << "error: no shader activated.\n";
 	}
+}
+
+GLuint initSimpleVAO(GLuint vertexCount, GLfloat data[]) {
+	GLuint VBO, VAO;
+	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &VAO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, 6*vertexCount*sizeof(GLfloat), data, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+
+	return VAO;
 }
 
 // void drawCuboid(rgb3 color, GLfloat length, GLfloat breadth, GLfloat height, vec3 position, GLfloat yaw, GLfloat pitch, GLfloat roll) {

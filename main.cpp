@@ -56,11 +56,22 @@ int main() {
 
 	// tile.model = test;
 	Game::init("level.txt");
+	GLint seconds = 0;
 	while (!glfwWindowShouldClose(Graphics::window)) {
 		glfwPollEvents();
 		IO::pollKeys();
 		GLfloat delTime = glfwGetTime() - curTime;
 		curTime += delTime;
+		GLint curSecs = GLint(curTime);
+		if(curSecs != seconds) {
+			seconds = curSecs;
+			GLint minutes = seconds / 60;
+			cerr << "Time: ";
+			if (minutes < 10) cerr << '0';
+			cerr << minutes << ':';
+			if (seconds < 10) cerr << '0';
+			cerr << seconds << '\n';
+		}
 
 		// game->pollKeys(Graphics::window, curTime);
 

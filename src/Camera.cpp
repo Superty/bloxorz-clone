@@ -1,26 +1,22 @@
 #include "Camera.hpp"
+#include "Player.hpp"
 
 namespace Camera {
 
-const GLfloat ZOOM_SPEED = 0.1, PAN_SPEED = 8, MAX_ZOOM = 4;
-
-
-vec3 pos = vec3(0, 0, 300);
-GLfloat zoom = 1;
-
-GLfloat yaw = radians(-90.0), pitch = radians(0.0);
+CameraMode mode;
 vec3 dir;
+
+// helicopter
+GLfloat radius, theta, phi;
+GLfloat baseTheta, basePhi;
 
 void init() {
 	if(Graphics::activeShader.isValid()) {
-		// dir = vec3(
-		// 	rotate(pitch, vec3(0, 0, 1))
-		// 	*rotate(yaw, vec3(0, 1, 0))
-		// 	*vec4(0, 0, -1, 1)
-		// );
+		radius = 400;
+		baseTheta = theta = 0;
+		basePhi = phi = 89.9;
 		useOrthoProjection();
 		useTowerCam();
-		// updateView();
 	}
 	else {
 		cerr << "error: Camera: no shader specified\n";
@@ -28,27 +24,25 @@ void init() {
 }
 
 void useOrthoProjection() {
-	GLfloat width = Graphics::SCREEN_WIDTH/zoom, height = Graphics::SCREEN_HEIGHT/zoom;
 	updateProjection(
 		ortho(
-			-width/2,
-			width/2,
-			-height/2,
-			height/2,
+			-Graphics::SCREEN_WIDTH/2,
+			Graphics::SCREEN_WIDTH/2,
+			-Graphics::SCREEN_HEIGHT/2,
+			Graphics::SCREEN_HEIGHT/2,
 			-1000.0f,
 			+1000.0f
 		)
 	);
 }
 
-void usePerspectiveProjection() {
-	GLfloat width = Graphics::SCREEN_WIDTH/zoom, height = Graphics::SCREEN_HEIGHT/zoom;
+void usePerspectiveProjection(GLfloat fov = 90.0f) {
 	updateProjection(
 		perspective(
-			90.0f
-		,	width/height
-		,	0.1f
-		,	500.0f
+			radians(90.0f)
+		,	Graphics::SCREEN_WIDTH/Graphics::SCREEN_HEIGHT
+		,	0.2f
+		,	1000.0f
 		)
 	);
 }
@@ -60,113 +54,127 @@ void updateProjection(mat4 projection) {
 	);
 }
 
-		// perspective(
-		// 	200.0f
-		// ,	GLfloat(Graphics::SCREEN_WIDTH)/Graphics::SCREEN_HEIGHT
-		// ,	-10000.0f
-		// ,	+10000.0f
-		// )
-
-void shiftLookDir(GLfloat dyaw, GLfloat dpitch) {
-	// yaw += dyaw;
-	// pitch += dpitch;
-	// dir = vec3(
-	// 	rotate(pitch, vec3(0, 0, 1))
-	// 	*rotate(yaw, vec3(0, 1, 0))
-	// 	*vec4(0, 0, -1, 1)
-	// );
-	// cerr << dir.x << ' ' << dir.y << ' ' << dir.z << '\n';
-	// updateView();
-}
-
-// void shiftLookFront() {
-// 	pos += dir;
-// 	updateView();
-// }
-
-// void shiftLookBack() {
-// 	pos -= dir;
-// 	updateView();
-// }
-
-// void shiftLookLeft() {
-// 	pos += 1.0f*vec3(
-// 		rotate(yaw + radians(90.0f), vec3(0, 1, 0))
-// 		*vec4(0, 0, -1, 1)
-// 	);
-// 	// cerr << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
-// 	updateView();
-// }
-
-// void shiftLookRight() {
-// 	pos += 1.0f*vec3(
-// 		rotate(yaw - radians(90.0f), vec3(0, 1, 0))
-// 		*vec4(0, 0, -1, 1)
-// 	);
-// 	updateView();
-// }
-
-// GLfloat moveSpeed = 10;
-
-// void shiftLookFront() {
-// 	pos.z += moveSpeed;
-// 	useStandardView();
-// }
-
-// void shiftLookBack() {
-// 	pos.z -= moveSpeed;
-// 	useStandardView();
-// }
-
-// void shiftLookLeft() {
-// 	pos.x -= moveSpeed;
-// 	useStandardView();
-// }
-
-// void shiftLookRight() {
-// 	pos.x += moveSpeed;
-// 	useStandardView();
-// }
-
-// void shiftLookUp() {
-// 	pos.y += moveSpeed;
-// 	useStandardView();
-// }
-
-// void shiftLookDown() {
-// 	pos.y -= moveSpeed;
-// 	useStandardView();
-// }
-
-/*
-ortho(
-	pos.x - width/2,
-	pos.x + width/2,
-	pos.y - height/2,
-	pos.y + height/2,
-	-1000.0f,
-	+1000.0f
-) */
-
 void useTowerCam() {
-	pos = vec3(0, 0, 300);
+	mode = CameraMode::Tower;
+	useOrthoProjection();
+	vec3 _pos(0, 0, 300);
 	updateView(
 		lookAt(
-			pos
-		,	pos + vec3(-1, -1, -0.5)
+			_pos
+		,	_pos + vec3(-1, -1, -0.5)
 		,	vec3(0, 1, 0)
 		)
 	);
 }
+
 void useTopCam() {
-	pos = vec3(-50, 0, 300);
+	mode = CameraMode::Top;
+	useOrthoProjection();
+	vec3 _pos(-50, 0, 300);
 	updateView(
 		lookAt(
-			pos
-		,	pos + vec3(0, -1, 0)
+			_pos
+		,	_pos + vec3(0, -1, 0)
 		,	vec3(-1, 0, 0)
 		)
 	);
+}
+
+void useHelicopterCam() {
+	mode = CameraMode::Helicopter;
+	usePerspectiveProjection();
+	vec3 _pos = radius*vec3(
+		cos(radians(phi))*cos(radians(theta))
+	,	sin(radians(phi))
+	,	cos(radians(phi))*sin(radians(theta))
+	);
+	// pos = indexToCoord(0, 0, 0);
+	vec3 centre = vec3(-50, 0, 300);
+	updateView(
+		// mat4(1.0f)
+		lookAt(
+			centre + _pos
+		,	centre
+		// ,	pos + vec3(0, -1, 0)
+		,	vec3(0, 1, 0)
+		)
+	);
+}
+
+void heliShift(GLfloat offset) {
+	if(mode == CameraMode::Helicopter) {
+		radius += offset;
+		if(radius < 100) {
+			radius = 100;
+		}
+		if(radius > 1000) {
+			radius = 1000;
+		}
+		Camera::useHelicopterCam();
+	}
+}
+
+void heliShiftRotate(GLfloat delTheta, GLfloat delPhi) {
+	if(mode == CameraMode::Helicopter) {
+		// cerr << delTheta << ' ' << delPhi << '\n';
+		theta = baseTheta + delTheta;
+		phi = basePhi + delPhi;
+		if(phi >= 89.9) {
+			phi = 89.9;
+		}
+		else if(phi <= 10.0) {
+			phi = 10.0;
+		}
+		Camera::useHelicopterCam();
+	}
+}
+
+void heliFixRotate() {
+	baseTheta = theta;
+	basePhi = phi;
+}
+
+// follow
+Status status = Status::Static;
+vec3 speed;
+GLint row, col;
+vec3 speedTheta;
+GLfloat followTheta, maxTheta;
+
+
+void useFollowCam(Player& player) {
+	mode = CameraMode::Follow;
+	usePerspectiveProjection();
+	vec3 _dir, _pos;
+	if(player.moveDir == Direction::Up) {
+		_dir = vec3(-1, -1, 0);
+		_pos = indexToMid(player.row + 2, player.col, 200);
+	}
+	else if(player.moveDir == Direction::Down) {
+		_dir = vec3(1, -1, 0);
+		_pos = indexToMid(player.row - 2, player.col, 200);
+	}
+	else if(player.moveDir == Direction::Left) {
+		_dir = vec3(0, -1, 1);
+		_pos = indexToMid(player.row, player.col - 2, 200);
+	}
+	else {
+		_dir = vec3(0, -1, -1);
+		_pos = indexToMid(player.row, player.col + 2, 200);
+	}
+	updateView(
+		lookAt(
+			_pos
+		,	_pos + _dir
+		,	vec3(0, 1, 0)
+		)
+	);
+}
+
+void update(GLfloat dt) {
+	if(status == Status::Moving) {
+		
+	}
 }
 
 void updateView(mat4 view) {
@@ -179,6 +187,47 @@ void updateView(mat4 view) {
 		// ,	vec3(0, 1, 0)
 		// )
 		view
+	);
+}
+
+void handlePlayerMove(Player &player) {
+	if(mode == CameraMode::Follow) {
+		useFollowCam(player);
+	}
+	else if(mode == CameraMode::Block) {
+		useBlockCam(player);
+	}
+}
+
+void useBlockCam(Player& player) {
+	mode = CameraMode::Block;
+	usePerspectiveProjection(120.0);
+	vec3 _dir, _pos;
+	if(player.moveDir == Direction::Up) {
+		_dir = vec3(-1, -1, 0);
+	}
+	else if(player.moveDir == Direction::Down) {
+		_dir = vec3(1, -1, 0);
+	}
+	else if(player.moveDir == Direction::Left) {
+		_dir = vec3(0, -1, 1);
+	}
+	else {
+		_dir = vec3(0, -1, -1);
+	}
+	_pos = indexToMid(player.row, player.col, 100);
+	if(player.orient == Orientation::Vertical) {
+		_pos += 25.0f*_dir;
+	}
+	else {
+		_pos += 75.0f*_dir;
+	}
+	updateView(
+		lookAt(
+			_pos
+		,	_pos + _dir
+		,	vec3(0, 1, 0)
+		)
 	);
 }
 

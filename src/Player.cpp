@@ -2,8 +2,9 @@
 #include "Board.hpp"
 #include "Game.hpp"
 
-Player::Player(GLuint o_row, GLuint o_col):
-	row(o_row)
+Player::Player(GLint o_row, GLint o_col):
+	stepCount(0)
+,	row(o_row)
 ,	col(o_col)
 ,	orient(Orientation::Vertical)
 ,	dir(Direction::Up)
@@ -28,15 +29,19 @@ Player::Player():
 	,	radians(0.0)
 	,	radians(0.0)
 	)
-{  }
+{}
+
+void Player::fall() {
+	status = Status::Exiting;
+	Game::movingObjectCount++;
+}
 
 void Player::stepOnCoveredTiles(Board& board) {
 	if(!isStatic()) {
 		return;
 	}
-
+	
 	board.stepOnTile(*this, row, col);
-	cerr << row << ' ' << col << '\n';
 	if(orient == Orientation::Horizontal) {
 		if(dir == Direction::Left) {
 			board.stepOnTile(*this, row, col + 1);
@@ -53,13 +58,22 @@ void Player::stepOnCoveredTiles(Board& board) {
 	}
 }
 
-void Player::update(GLfloat dt, Board& board) {
+bool Player::update(GLfloat dt, Board& board) {
 	if(status == Status::Entering) {
 		model.pos.y -= dt * fallSpeed + gravity*dt*dt/2;
 		fallSpeed += dt * gravity;
 		if(model.pos.y < Tile::HEIGHT) {
 			model.pos.y = Tile::HEIGHT;
 			status = Status::Static;
+		}
+		Camera::handlePlayerMove(*this);
+	}
+	else if(status == Status::Exiting) {
+		model.pos.y -= dt * fallSpeed + gravity*dt*dt/2;
+		fallSpeed += dt * gravity;
+		if(model.pos.y < -1000) {
+			Game::movingObjectCount--;
+			return false;
 		}
 	}
 	else if(status == Status::Moving) {
@@ -108,6 +122,7 @@ void Player::update(GLfloat dt, Board& board) {
 			}
 		}
 	}
+	return true;
 }
 
 void Player::animateModelTill(Board& board, GLfloat& attr, GLfloat by, GLfloat tillDegrees) {
@@ -146,6 +161,8 @@ void Player::move(Direction where) {
 	if(!isStatic()) {
 		return;
 	}
+	stepCount++;
+	cerr << "Step Count: " << stepCount << '\n';
 	if(orient == Orientation::Vertical) {
 		if(where == Direction::Left) {
 			col++;
@@ -216,5 +233,5 @@ void Player::move(Direction where) {
 	moveDir = where;
 	status = Status::Moving;
 	Game::movingObjectCount++;
-	// }
+	Camera::handlePlayerMove(*this);
 }

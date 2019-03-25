@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 
 namespace IO {
-	extern bool inputEnabled;
+	
 	void init();
 	void keyCallback(GLFWwindow *window, GLint key, GLint scancode, GLint action, GLint mode);
 	void cursorPositionCallback(GLFWwindow* window, GLdouble xpos, GLdouble ypos);

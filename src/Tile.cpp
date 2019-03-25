@@ -46,7 +46,7 @@ FragileTile::FragileTile(GLint o_row, GLint o_col):
 
 void FragileTile::stepOn(Player& player, Board& board) {
 	if(player.orient == Orientation::Vertical) {
-		Game::over = true;
+		Game::end(Game::over);
 	}
 }
 
@@ -55,7 +55,7 @@ EmptyTile::EmptyTile(GLint o_row, GLint o_col):
 {  }
 
 void EmptyTile::stepOn(Player& player, Board& board) {
-	Game::over = true;
+	Game::end(Game::over);
 }
 
 GoalTile::GoalTile(GLint o_row, GLint o_col):
@@ -64,7 +64,7 @@ GoalTile::GoalTile(GLint o_row, GLint o_col):
 
 void GoalTile::stepOn(Player& player, Board& board) {
 	if(player.orient == Orientation::Vertical) {
-		Game::won = true;
+		Game::end(Game::won);
 	}
 }
 
@@ -152,7 +152,7 @@ void BridgeTile::animateModelTill(GLfloat& attr, GLfloat by, GLfloat tillDegrees
 
 void BridgeTile::stepOn(Player& player, Board& board) {
 	if(state == BridgeState::Folded) {
-		Game::over = true;
+		Game::end(Game::over);
 	}
 }
 
@@ -178,6 +178,7 @@ void SwitchTile::init(vector<pair<int,int>>&& o_bridgeList) {
 }
 
 void SwitchTile::stepOn(Player& player, Board& board) {
+	board.isPressedSwitch[row][col] = !board.isPressedSwitch[row][col];
 	for(auto bridgePos : bridgeList) {
 		board.activateTile(bridgePos.first, bridgePos.second);
 	}

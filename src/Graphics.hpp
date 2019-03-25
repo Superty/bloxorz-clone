@@ -3,6 +3,7 @@
 #include "globals.hpp"
 #include "ShaderProgram.hpp"
 #include "Cuboid.hpp"
+#include "Rectangle.hpp"
 
 #include <map>
 
@@ -21,6 +22,7 @@ namespace Graphics {
 	
 	void initgl();
 	GLuint initVAO(GLfloat vertices[], GLfloat normals[], GLuint vertexCount);
+	GLuint initSimpleVAO(GLuint vertexCount, GLfloat data[]);
 	void initRectangleVAO();
 	void initCuboidVAO();
 

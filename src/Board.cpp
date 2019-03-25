@@ -1,8 +1,9 @@
 #include "Board.hpp"
 #include "Tile.hpp"
+#include "Game.hpp"
 
 TilePointer Board::decodeTile(char c, GLint row, GLint col) {
-	if(c == 'N') 		return TilePointer(new NormalTile(row, col));
+		 if(c == 'N') 		return TilePointer(new NormalTile(row, col));
 	else if(c == 'F')	return TilePointer(new FragileTile(row, col));
 	else if(c == 'B') 	return TilePointer(new BridgeTile(row, col));
 	else if(c == 'S') 	return TilePointer(new SwitchTile(row, col));
@@ -11,7 +12,7 @@ TilePointer Board::decodeTile(char c, GLint row, GLint col) {
 }
 
 Direction Board::decodeDir(char d) {
-	if(d == 'U') return Direction::Up;
+		 if(d == 'U') return Direction::Up;
 	else if(d == 'D') return Direction::Down;
 	else if(d == 'L') return Direction::Left;
 	else if(d == 'R') return Direction::Right;
@@ -28,21 +29,24 @@ Board::Board(string dataFile) {
 		dataStream >> input;
 		for(GLuint j = 0; j < LEVEL_SIDE; j++) {
 			level[i][j] = decodeTile(input[LEVEL_SIDE - j - 1], i, j);
+			isPressedSwitch[i][j] = false;
 			// cerr << input[j] << ;
 		}
 		// cerr << '\n';
 	}
 	GLint row, col;
 	while(dataStream >> row >> col) {
+		// cerr << row << ' ' << col << ' ';
 		col = LEVEL_SIDE - col - 1;
 		if(level[row][col]->type == TileType::Bridge) {
-			cerr << "bridge at: " << row << ' ' << col << '\n';
+			// cerr << "bridge\n";
 			char dir, state;
 			dataStream >> dir >> state;
 			BridgeTile& tile = dynamic_cast<BridgeTile&>(*level[row][col]);
 			tile.init(decodeDir(dir), (state == 'E' ? BridgeState::Expanded : BridgeState::Folded));
 		}
 		else if(level[row][col]->type == TileType::Switch) {
+			// cerr << "switch\n";
 			GLuint bridgeCount;
 			dataStream >> bridgeCount;
 			vector<pair<int,int>> bridgeList;
@@ -78,5 +82,20 @@ void Board::activateTile(GLint row, GLint col) {
 }
 
 void Board::stepOnTile(Player& player, GLint row, GLint col) {
-	level[row][col]->stepOn(player, *this);
+	if(row < 0 || col < 0 || row >= LEVEL_SIDE || col >= LEVEL_SIDE) {
+		Game::end(Game::over);
+	}
+	else {
+		level[row][col]->stepOn(player, *this);
+	}
+}
+
+void Board::reset(Player& player) {
+	for(GLuint i = 0; i < LEVEL_SIDE; i++) {
+		for(GLuint j = 0; j < LEVEL_SIDE; j++) {
+			if(isPressedSwitch[i][j]) {
+				stepOnTile(player, i, j);
+			}
+		}
+	}
 }

@@ -3,10 +3,14 @@
 #include "globals.hpp"
 #include "Graphics.hpp"
 
-enum class CameraMode { Top, Tower };
+class Player;
+
+enum class CameraMode { Top, Tower, Helicopter, Follow, Block };
 
 namespace Camera {
+	extern CameraMode mode;
 	extern vec3 pos;
+	extern GLfloat radius, theta, phi;
 	void init();
 	void updateProjection(mat4 projection);
 	void useOrthoProjection();
@@ -23,8 +27,13 @@ namespace Camera {
 	void useTopCam();
 	void useTowerCam();
 	void useHelicopterCam();
+	void heliShift(GLfloat offset);
+	void heliShiftRotate(GLfloat delTheta, GLfloat delPhi);
+	void heliFixRotate();
 
-
+	void useFollowCam(Player& player);
+	void useBlockCam(Player& player);
+	void handlePlayerMove(Player &player);
 
 	// mat4 getVP();
 	// void clipPos();

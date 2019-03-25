@@ -5,7 +5,7 @@ namespace Light {
 	vec3 pos(250, 200, 500);
 
 	void init() {
-		updateColor(rgb3(1, 1, 1));
+		updateColor(RGB(255, 255, 255));
 		shiftPos(vec3(0, 0, 0));
 	}
 	
